@@ -20,7 +20,7 @@ img6 = imread(file6);
 imageArray = {img1,img2,img3};
 imageActualArray = {img4,img5,img6};
 
-for i = 3:3
+for i = 1:3
 img = imageArray{i}; 
 actImage = imageActualArray{i};
 
@@ -31,41 +31,35 @@ imshow(img);
 title("Blue Channel");
 
 se = strel('disk',3);
-se2 = strel('disk',30);
 
+
+img = imbinarize(img,0.51);
 img = imdilate(img,se);
 ax2 = subplot(3,2,2);
 imshow(img);
 title("Dilate");
-
-
-img = imbinarize(img,0.5);
 ax3 = subplot(3,2,3);
 imshow(img);
 title("Binarized");
 
 [height, width, dim] = size(img);
 
-for i = 1:height-1
-    for j = 1:width-1
-         
-        if img(i,j) == 0
-            img(i,j) = 1;
-            continue;
-        end
-        if img(i,j) == 1
-            img(i,j) = 0;
-            continue;
-        end
-    end
-end
+img = ~img;
 
 img = bwareafilt(img,1);
 ax4 = subplot(3,2,4);
 imshow(img);
 title("area filt and flip b/w");
+img = imfill(img,'holes');
 
-img = imdilate(img,se2);
+area = bwarea(img);
+area = area /10000;
+
+se2 = strel('disk',round(area) * 6);
+
+if area < 40
+    img = imdilate(img,se2);
+end
 ax5 = subplot(3,2,5);
 imshow(img);
 title("Dilate");
@@ -79,6 +73,6 @@ img = im2double(img);
 actImage = im2double(actImage);
 
 DS = dice(img,actImage)
-
+figure;
 
 end

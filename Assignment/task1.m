@@ -1,4 +1,4 @@
-close all
+close all; clc;
 fileName = mfilename('fullpath');
 fileName = erase(fileName,'task1');
 file1 = strcat(fileName, 'images\ISIC_0000416.jpg');
@@ -25,6 +25,7 @@ img = imageArray{i};
 actImage = imageActualArray{i};
 
 img = img(:,:,3); %get blue channel
+[height, width, dim] = size(img);
 
 ax1 = subplot(3,2,1);
 imshow(img);
@@ -32,40 +33,38 @@ title("Blue Channel");
 
 se = strel('disk',3);
 
-
 img = imbinarize(img,0.51);
-img = imdilate(img,se);
-ax2 = subplot(3,2,2);
-imshow(img);
-title("Dilate");
-ax3 = subplot(3,2,3);
+img = ~img;
+ax3 = subplot(3,2,2);
 imshow(img);
 title("Binarized");
+img = imerode(img,se);
+ax2 = subplot(3,2,3);
+imshow(img);
+title("Erode");
 
-[height, width, dim] = size(img);
 
-img = ~img;
+
 
 img = bwareafilt(img,1);
-ax4 = subplot(3,2,4);
+ax1 = subplot(3,2,4);
 imshow(img);
 title("area filt and flip b/w");
 img = imfill(img,'holes');
 
-area = bwarea(img);
-area = area /10000;
 
-se2 = strel('disk',round(area) * 6);
+se2 = strel('disk',20);
 
-if area < 40
-    img = imdilate(img,se2);
-end
+img = imdilate(img,se2);
+
+
 ax5 = subplot(3,2,5);
 imshow(img);
 title("Dilate");
 
 
 ax6 = subplot(3,2,6);
+
 imshow(actImage);
 title("Ground truth");
 

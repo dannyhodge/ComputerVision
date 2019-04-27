@@ -6,18 +6,14 @@ function [xe Pe] = kalmanUpdate(x, P, H, R, z)
 % R: matrix of observation noise
 % z: observation vector
 % Return estimated state vector xe and covariance Pe
+
+
+
 S = H * P * H' + R; % innovation covariance
 K = P * H' * inv(S); % Kalman gain
 zp = H * x; % predicted observation
-
-%gate = (z - zp)' * inv(S) * (z - zp);
-%if gate > 9.21
-% warning('Observation outside validation gate');
-% xe = x;
-% Pe = P;
-% return
-%end
-
 xe = x + K * (z - zp); % estimated state
 Pe = P - K * S * K'; % estimated covariance
+
+
 end

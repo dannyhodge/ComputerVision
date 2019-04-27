@@ -32,41 +32,23 @@ for i = 1:3
 img = imageArray{i}; 
 actImage = imageActualArray{i};
 
-img = img(:,:,3); %get blue channel
-subplot(3,2,1);
-imshow(img);
-title("Blue Channel");
 
-
-
+img = img(:,:,3);            %get blue channel
 img = imbinarize(img,0.51);  %convert to black and white based on threshold
 img = ~img;                  %flip black and white
-subplot(3,2,2);
-imshow(img);
-title("Binarized");
+
+
 
 se = strel('disk',3);     %a relatively small structuring element, to remove hairs
 img = imerode(img,se);    %remove borders of images based on the stucturing element
-subplot(3,2,3);
-imshow(img);
-title("Erode");
-
 img = bwareafilt(img,1);  %return largest remaining image
-subplot(3,2,4);
-imshow(img);
-title("Area filt (return largest image)");
-
-img = imfill(img,'holes');  %fill in spaces inside image
-se2 = strel('disk',20);     %larger structuring element
-img = imdilate(img,se2);    %expand image back to full size
-subplot(3,2,5);
-imshow(img);
-title("Dilate and fill (final)");
-subplot(3,2,6);
 
 
-imshow(actImage);
-title("Ground truth");
+
+img = imfill(img,'holes'); %fill in spaces inside image
+se2 = strel('disk',20);    %larger structuring element
+img = imdilate(img,se2);   %expand image back to full size
+
 
 
 img = im2double(img);

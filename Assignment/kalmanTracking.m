@@ -10,7 +10,7 @@ x1 = csvread('x.csv');
 y = csvread('y.csv');
 size(x1)
 
-z = [a,b];
+z = [a ; b];
 
 % Return the estimated state position coordinates (px,py)
 dt = 0.05; % time interval
@@ -23,6 +23,10 @@ x = [0 0 0 0]'; % initial state
 P = Q; % initial state covariance
 s = zeros(4,N);
 e = zeros(1,100);
+ex = zeros(1,100);
+ey = zeros(1,100);
+ex2 = zeros(1,100);
+ey2 = zeros(1,100);
 e2 = zeros(1,100);
 for i = 1 : N
  [xp Pp] = kalmanPredict(x, P, F, Q);
@@ -32,20 +36,39 @@ for i = 1 : N
 end
 px = s(1,:); % NOTE: s(2, :) and s(4, :), not considered here,
 py = s(3,:); % contain the velocities on x and y respectively
+newpx = zeros(1,100);
+newpy = zeros(1,100);
 
-for i = 1: 100
-   e(i) = sqrt((x1(i)-px(i))^2 + (y(i)-py(i))^2);
-   e2(i) = sqrt((a(i)-px(i))^2 + (b(i)-py(i))^2);
+
+for i = 1:100
+    
+    newpx(i) = px(i);
+    newpy(i) = py(i);
+    ex(i) = ((newpx(i) - x1(i)).^2);   
+    ey(i) = ((newpy(i) - y(i)).^2);
+    e(i) = sqrt(ex(i) + ey(i)); 
+    ex2(i) = ((newpx(i) - a(i)).^2);
+    ey2(i) = ((newpy(i) - b(i)).^2);
+    e2(i) = sqrt(ex2(i) + ey2(i));
+    
 end
 
-av = mean(e)
+
+pvals = [newpx,newpy];
+actVals = [x1,y];
+
+
+
+meanAbsError = mean(e)
+meanAbsErrory = mean(e2)
+
 standD = std(e)
 
 
 ptotal = [px,py];
 
-rms1 = rms(e);
-rms2 = rms(e2);
+rms1 = rms(e)
+rms2 = rms(e2)
 plot(x1,y,'xb') ;
 title(rms1);
 hold;
@@ -58,6 +81,7 @@ title(rms2);
 hold;
 plot(px,py,'+r');
 
-
+x1(100)
+y(100)
 end
 
